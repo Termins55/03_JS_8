@@ -41,19 +41,38 @@
 // - Випадкове зображення собаки https://dog.ceo/api/breeds/image/random
 // Наприклад, при натисканні на кнопку або саме зображення змінювати зображення на нове рандомне.
 
-const dogUrl = "https://dog.ceo/api/breeds/image/random";
+// const dogUrl = "https://dog.ceo/api/breeds/image/random";
 
-function clickBtnHandler() {
-  fetch(dogUrl)
+// function clickBtnHandler() {
+//   fetch(dogUrl)
+//     .then((response) => response.json())
+//     .then((data) => {
+//       const dogImgDiv = document.querySelector(".dog-image");
+//       dogImgDiv.style.backgroundImage = `url(${data.message})`;
+//     })
+//     .catch((err) => console.log(err));
+// }
+// const clickBtn = document.querySelector(".click-me");
+// clickBtn.addEventListener("click", clickBtnHandler);
+
+// const clickDogImg = document.querySelector(".dog-image");
+// clickDogImg.addEventListener("click", clickBtnHandler);
+
+// - Випадкові факти про котів https://catfact.ninja/fact
+// Наприклад, при натисканні на кнопку змінювати рядок на новий рандомний.
+
+const catUrl = "https://catfact.ninja/fact";
+
+function catFactHandler() {
+  fetch(catUrl)
     .then((response) => response.json())
     .then((data) => {
-      const dogImgDiv = document.querySelector(".dog-image");
-      dogImgDiv.style.backgroundImage = `url(${data.message})`;
+      const catFactEl = document.querySelector(".cat-fact");
+      catFactEl.textContent = data.fact;
+      catFactEl.style.display = "block";
     })
     .catch((err) => console.log(err));
 }
-const clickBtn = document.querySelector(".click-me");
-clickBtn.addEventListener("click", clickBtnHandler);
 
-const clickDogImg = document.querySelector(".dog-image");
-clickDogImg.addEventListener("click", clickBtnHandler);
+const catBtn = document.querySelector(".cat-btn");
+catBtn.addEventListener("click", catFactHandler);
