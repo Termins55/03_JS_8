@@ -61,18 +61,79 @@
 // - Випадкові факти про котів https://catfact.ninja/fact
 // Наприклад, при натисканні на кнопку змінювати рядок на новий рандомний.
 
-const catUrl = "https://catfact.ninja/fact";
+// const catUrl = "https://catfact.ninja/fact";
 
-function catFactHandler() {
-  fetch(catUrl)
-    .then((response) => response.json())
-    .then((data) => {
-      const catFactEl = document.querySelector(".cat-fact");
-      catFactEl.textContent = data.fact;
-      catFactEl.style.display = "block";
-    })
-    .catch((err) => console.log(err));
+// function catFactHandler() {
+//   fetch(catUrl)
+//     .then((response) => response.json())
+//     .then((data) => {
+//       const catFactEl = document.querySelector(".cat-fact");
+//       catFactEl.textContent = data.fact;
+//       catFactEl.style.display = "block";
+//     })
+//     .catch((err) => console.log(err));
+// }
+
+// const catBtn = document.querySelector(".cat-btn");
+// catBtn.addEventListener("click", catFactHandler);
+
+// - Погодне API https://open-meteo.com/
+// Наприклад, вивести на наступні 3 дні дані про
+// --- максимальну швидкість вітру (Maximum Wind Speed),
+// --- максимальні пориви вітру (Maximum Wind Gusts )
+// у вигляді таблиці
+// | швидкість вітру | пориви вітру | бали для швидкості вітру |
+// де бали визначити за шкалою Бофорта i підсвічуються кольором з тпблиці https://ru.wikipedia.org/wiki/%D0%A8%D0%BA%D0%B0%D0%BB%D0%B0_%D0%91%D0%BE%D1%84%D0%BE%D1%80%D1%82%D0%B0 (дані завантажуються у км/год).
+
+const weatherUrl =
+  "https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&daily=wind_speed_10m_max,wind_gusts_10m_max&timezone=auto&forecast_days=3";
+
+fetch(weatherUrl)
+  .then((response) => response.json())
+  .then((data) => createWeaterTable(data))
+  .catch((err) => console.log("error :>> ", err));
+
+const tbody = document.querySelector("tbody");
+
+function getBeaufortScale(speed) {
+  if (speed < 1) return { score: 0, color: "#e0f7fa" };
+  if (speed < 6) return { score: 1, color: "#b2ebf2" };
+  if (speed < 12) return { score: 2, color: "#80deea" };
+  if (speed < 20) return { score: 3, color: "#4dd0e1" };
+  if (speed < 29) return { score: 4, color: "#26c6da" };
+  if (speed < 39) return { score: 5, color: "#00bcd4" };
+  if (speed < 50) return { score: 6, color: "#00acc1" };
+  if (speed < 62) return { score: 7, color: "#0097a7" };
+  if (speed < 75) return { score: 8, color: "#00838f" };
+  if (speed < 89) return { score: 9, color: "#006064" };
+  if (speed < 103) return { score: 10, color: "#ff9800" };
+  if (speed < 118) return { score: 11, color: "#f44336" };
+  return { score: 12, color: "#b71c1c" };
 }
 
-const catBtn = document.querySelector(".cat-btn");
-catBtn.addEventListener("click", catFactHandler);
+function createWeaterTable(data) {
+  const days = data.daily.time;
+  const speeds = data.daily.wind_speed_10m_max;
+  const gusts = data.daily.wind_gusts_10m_max;
+
+  days.forEach((day, i) => {
+    const trEl = document.createElement("tr");
+
+    const tdDay = document.createElement("td");
+    tdDay.textContent = day;
+
+    const tdSpeed = document.createElement("td");
+    tdSpeed.textContent = speeds[i];
+
+    const tdGust = document.createElement("td");
+    tdGust.textContent = gusts[i];
+
+    const beaufort = getBeaufortScale(speeds[i]);
+    const tdBeaufort = document.createElement("td");
+    tdBeaufort.textContent = `${beaufort.score} points`;
+
+    trEl.append(tdDay, tdSpeed, tdGust, tdBeaufort);
+    tbody.append(trEl);
+  });
+}
+
